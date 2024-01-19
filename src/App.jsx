@@ -1,12 +1,29 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 function App() {
   const [length, setLength] = useState(8);
+  console.log("length", length);
   const [numAllowed, setNumAllowed] = useState(false);
   const [charAllowed, setCharAllowed] = useState(false);
   const [password, setPassword] = useState("");
 
-  const passwordGenerator = ()=>{}
+  const passwordGenerator = useCallback(() => {
+    let pass = "";
+    let str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    if (numAllowed) str += "0123456789";
+    if (charAllowed) str += "!@#$%^&*-_+=[]{}~`";
+    for (let i = 0; i <= length; i++) {
+      let char = Math.floor(Math.random() * str.length +1);
+      console.log("chars", char);
+      pass += str.charAt(char);
+    }
+    console.log(pass);
+    setPassword(pass);
+  }, [length, numAllowed, charAllowed]);
+
+  useEffect(() => {
+    passwordGenerator();
+  }, [length, numAllowed, charAllowed]);
 
   return (
     <>
@@ -17,6 +34,7 @@ function App() {
             type="text"
             className="outline-none w-full py-1 px-3"
             placeholder="Password"
+            value={password}
             readOnly
           />
           <button className="outline-none bg-blue-700 text-white px-3 py-0.5 shrink-0">
@@ -25,7 +43,15 @@ function App() {
         </div>
         <div className="flex text-sm gap-x-2">
           <div className="flex items-center gap-x-1">
-            <input type="range" min={6} max={100} className="cursor-pointer" />
+            <input
+              type="range"
+              min={6}
+              max={100}
+              className="cursor-pointer"
+              value={length}
+              onChange={(e) => setLength(e.target.value)}
+            />
+            <label>Length: {length}</label>
             <div className="flex items-center gap-x-1">
               <input type="checkbox" id="numberInput" />
               <label htmlFor="numberIput">Numbers</label>
